@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Univers Clashs - Sekai Clash</title>
+  <link rel="stylesheet" href="univers.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="accueil.html" class="nav-logo">Sekai<span>Clash</span></a>
+
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+
+      <label for="nav-toggle" class="nav-hamburger">
+        ☰
+      </label>
+
+      <ul class="nav-menu">
+        <li><a href="accueil.html">Accueil</a></li>
+        <li><a href="page2.html" class="active">Clashs</a></li>
+        <li><a href="classement.html">Classement</a></li>
+        <li><a href="apropos.html">À propos</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <a href="page2.html" class="back-btn">
+      ← Retour aux catégories
+    </a>
+
+    <h1 class="page-title">
+      Univers <span>Clashs</span>
+    </h1>
+
+    <p class="page-subtitle">
+      Vote pour les meilleurs univers anime
+    </p>
+
+    <div class="clash-list" id="clash-list"></div>
+
+  </main>
+
+  <script>
+
+    const debates = [
+      "Quel univers possède les personnages les plus puissants entre Dragon Ball et One Piece ?",
+      "Quel univers possède les meilleurs antagonistes entre Naruto et Bleach ?",
+      "Quel univers a le meilleur système de pouvoir entre Hunter x Hunter et Jujutsu Kaisen ?",
+      "Quel univers est le plus dangereux entre Attack on Titan et Chainsaw Man ?",
+      "Quel univers a le meilleur lore entre One Piece et Naruto ?",
+      "Quel univers possède les transformations les plus stylées entre Dragon Ball et Bleach ?",
+      "Quel univers est le plus sombre entre Berserk et Tokyo Ghoul ?",
+      "Quel univers a les combats les plus impressionnants entre Demon Slayer et Jujutsu Kaisen ?",
+      "Quel univers a les personnages les plus intelligents entre Death Note et Code Geass ?",
+      "Quel univers possède les meilleurs arcs entre One Piece et Hunter x Hunter ?",
+      "Quel univers est le plus drôle entre Gintama et Konosuba ?",
+      "Quel univers possède les meilleurs héros entre My Hero Academia et Black Clover ?",
+      "Quel univers est le plus mystérieux entre Made in Abyss et Attack on Titan ?",
+      "Quel univers possède les meilleurs pouvoirs entre Jojo et Naruto ?",
+      "Quel univers est le plus triste entre Clannad et Your Lie in April ?",
+      "Quel univers a les meilleurs duos entre Bleach et One Piece ?",
+      "Quel univers possède les meilleurs maîtres entre Naruto et Dragon Ball ?",
+      "Quel univers a les meilleurs méchants entre Jojo et Bleach ?",
+      "Quel univers possède les meilleurs combats stratégiques entre Hunter x Hunter et Death Note ?",
+      "Quel univers est le plus populaire entre Dragon Ball et Naruto ?"
+    ];
+
+    const list = document.getElementById("clash-list");
+
+    let votes = {};
+    let comments = {};
+    let userReactions = {};
+    let username = sessionStorage.getItem("username") || "";
+    let commentIdCounter = 0;
+
+    debates.forEach((debate, index) => {
+
+      const parts = debate.match(/entre\s+(.+?)\s+et\s+(.+?)\s*\?/i);
+
+      const fighter1 = parts ? parts[1].trim() : "Univers 1";
+      const fighter2 = parts ? parts[2].trim() : "Univers 2";
+
+      votes[index] = {
+        f1True: 0,
+        f1False: 0,
+        f2True: 0,
+        f2False: 0,
+        hasVoted: {}
+      };
+
+      comments[index] = [];
+      userReactions[index] = {};
+
+      list.innerHTML += `
+
+      <div class="clash-card">
+
+        <div class="clash-question">
+          <h3>${debate}</h3>
+        </div>
+
+        <div class="clash-versus">
+
+          <div class="fighter">
+            <h4>${fighter1}</h4>
+
+            <div class="vote-buttons">
+              <button class="vote-btn true-btn"
+              onclick="voteFighter(${index},1,'true')">
+              Vrai <span id="f1t-${index}">0</span>
+              </button>
+
+              <button class="vote-btn false-btn"
+              onclick="voteFighter(${index},1,'false')">
+              Faux <span id="f1f-${index}">0</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="vs">VS</div>
+
+          <div class="fighter">
+            <h4>${fighter2}</h4>
+
+            <div class="vote-buttons">
+              <button class="vote-btn true-btn"
+              onclick="voteFighter(${index},2,'true')">
+              Vrai <span id="f2t-${index}">0</span>
+              </button>
+
+              <button class="vote-btn false-btn"
+              onclick="voteFighter(${index},2,'false')">
+              Faux <span id="f2f-${index}">0</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="comment-section">
+
+          <div class="username-input">
+            <input
+              type="text"
+              id="username-${index}"
+              placeholder="Ton pseudo"
+              maxlength="20"
+              value="${username}"
+            >
+
+            <button
+              class="save-name-btn"
+              onclick="saveUsername(${index})">
+              OK
+            </button>
+          </div>
+
+          <div class="comment-input">
+
+            <input
+              type="text"
+              id="comment-${index}"
+              placeholder="Donne ton avis..."
+              maxlength="200"
+            >
+
+            <button
+              class="comment-btn"
+              onclick="postComment(${index})">
+              Envoyer
+            </button>
+
+          </div>
+
+          <div class="comments" id="comments-${index}"></div>
+
+        </div>
+
+      </div>
+
+      `;
+    });
+
+    function saveUsername(debateId) {
+
+      const input =
+      document.getElementById(`username-${debateId}`);
+
+      username = input.value.trim();
+
+      if(username){
+
+        sessionStorage.setItem("username", username);
+
+        input.disabled = true;
+
+        document.querySelector(
+          `#username-${debateId} + button`
+        ).textContent = "✓";
+      }
+    }
+
+    function voteFighter(debateId, fighter, type){
+
+      const key =
+      `f${fighter}${type.charAt(0).toUpperCase()+type.slice(1)}`;
+
+      if(!votes[debateId].hasVoted){
+        votes[debateId].hasVoted = {};
+      }
+
+      if(votes[debateId].hasVoted[fighter] === type){
+
+        votes[debateId][key]--;
+
+        delete votes[debateId].hasVoted[fighter];
+
+      } else {
+
+        if(votes[debateId].hasVoted[fighter]){
+
+          const oldType =
+          votes[debateId].hasVoted[fighter];
+
+          const oldKey =
+          `f${fighter}${oldType.charAt(0).toUpperCase()+oldType.slice(1)}`;
+
+          votes[debateId][oldKey]--;
+        }
+
+        votes[debateId][key]++;
+
+        votes[debateId].hasVoted[fighter] = type;
+      }
+
+      document.getElementById(`f1t-${debateId}`).textContent =
+      votes[debateId].f1True;
+
+      document.getElementById(`f1f-${debateId}`).textContent =
+      votes[debateId].f1False;
+
+      document.getElementById(`f2t-${debateId}`).textContent =
+      votes[debateId].f2True;
+
+      document.getElementById(`f2f-${debateId}`).textContent =
+      votes[debateId].f2False;
+    }
+
+    function postComment(debateId){
+
+      const input =
+      document.getElementById(`comment-${debateId}`);
+
+      const text = input.value.trim();
+
+      const name =
+      username ||
+      document.getElementById(`username-${debateId}`).value.trim() ||
+      "Anonyme";
+
+      if(text === "") return;
+
+      const commentId = commentIdCounter++;
+
+      comments[debateId].push({
+        id: commentId,
+        text: text,
+        user: name,
+        likes: 0,
+        dislikes: 0
+      });
+
+      renderComments(debateId);
+
+      input.value = "";
+    }
+
+    function renderComments(debateId){
+
+      const commentsDiv =
+      document.getElementById(`comments-${debateId}`);
+
+      commentsDiv.innerHTML = "";
+
+      comments[debateId].forEach(comment => {
+
+        const userReact =
+        userReactions[debateId]?.[comment.id];
+
+        commentsDiv.innerHTML += `
+
+        <div class="comment">
+
+          <div class="comment-header">
+            <span class="comment-user">${comment.user}</span>
+          </div>
+
+          <p>${comment.text}</p>
+
+          <div class="comment-actions">
+
+            <button
+              class="like-btn ${userReact === 'like' ? 'active' : ''}"
+              onclick="reactComment(${debateId},${comment.id},'like')">
+
+              👍 <span>${comment.likes}</span>
+
+            </button>
+
+            <button
+              class="dislike-btn ${userReact === 'dislike' ? 'active' : ''}"
+              onclick="reactComment(${debateId},${comment.id},'dislike')">
+
+              👎 <span>${comment.dislikes}</span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+        `;
+      });
+    }
+
+    function reactComment(debateId, commentId, type){
+
+      const comment =
+      comments[debateId].find(c => c.id === commentId);
+
+      if(!comment) return;
+
+      if(!userReactions[debateId]){
+        userReactions[debateId] = {};
+      }
+
+      const currentReact =
+      userReactions[debateId][commentId];
+
+      if(currentReact === type){
+
+        if(type === "like"){
+          comment.likes--;
+        } else {
+          comment.dislikes--;
+        }
+
+        delete userReactions[debateId][commentId];
+
+      } else {
+
+        if(currentReact === "like"){
+          comment.likes--;
+        }
+
+        if(currentReact === "dislike"){
+          comment.dislikes--;
+        }
+
+        if(type === "like"){
+          comment.likes++;
+        } else {
+          comment.dislikes++;
+        }
+
+        userReactions[debateId][commentId] = type;
+      }
+
+      renderComments(debateId);
+    }
+
+  </script>
+
+</body>
+</html>

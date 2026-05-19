@@ -1,0 +1,286 @@
+/* =========================
+   RESET
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#0f0f0f;
+  color:white;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+  width:100%;
+  background:#111;
+  border-bottom:2px solid #ff3c3c;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.nav-container{
+  max-width:1200px;
+  margin:auto;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.nav-logo{
+  text-decoration:none;
+  color:white;
+  font-size:2rem;
+  font-weight:bold;
+}
+
+.nav-logo span{
+  color:#ff3c3c;
+}
+
+.nav-menu{
+  display:flex;
+  list-style:none;
+  gap:25px;
+}
+
+.nav-menu a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.nav-menu a:hover,
+.nav-menu .active{
+  color:#ff3c3c;
+}
+
+.nav-toggle{
+  display:none;
+}
+
+.nav-hamburger{
+  display:none;
+  font-size:2rem;
+  color:white;
+  cursor:pointer;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.page-title{
+  text-align:center;
+  font-size:3rem;
+  margin-bottom:15px;
+}
+
+.page-title span{
+  color:#ff3c3c;
+}
+
+.page-subtitle{
+  text-align:center;
+  color:#bbb;
+  font-size:1.1rem;
+  margin-bottom:50px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.categories-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+  gap:25px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.category-card{
+  padding:35px 25px;
+  border-radius:20px;
+  text-decoration:none;
+  color:white;
+  transition:0.3s;
+  border:2px solid transparent;
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.category-card:hover{
+  transform:translateY(-8px) scale(1.02);
+}
+
+.category-card h2{
+  font-size:2rem;
+  margin-bottom:15px;
+}
+
+.category-card p{
+  line-height:1.6;
+  font-size:1rem;
+}
+
+/* =========================
+   COLORS
+========================= */
+
+/* SHONEN */
+
+.shonen{
+  background:linear-gradient(135deg,#ff512f,#dd2476);
+}
+
+.shonen:hover{
+  border-color:#ffb199;
+}
+
+/* SEINEN */
+
+.seinen{
+  background:linear-gradient(135deg,#232526,#414345);
+}
+
+.seinen:hover{
+  border-color:#999;
+}
+
+/* UNIVERS */
+
+.univers{
+  background:linear-gradient(135deg,#4776e6,#8e54e9);
+}
+
+.univers:hover{
+  border-color:#c2a8ff;
+}
+
+/* MAITRE */
+
+.maitre{
+  background:linear-gradient(135deg,#11998e,#38ef7d);
+}
+
+.maitre:hover{
+  border-color:#8affc1;
+}
+
+/* ROMANCE */
+
+.romance{
+  background:linear-gradient(135deg,#ff758c,#ff7eb3);
+}
+
+.romance:hover{
+  border-color:#ffd1dc;
+}
+
+/* COMEDIE */
+
+.comedie{
+  background:linear-gradient(135deg,#f7971e,#ffd200);
+  color:#111;
+}
+
+.comedie p,
+.comedie h2{
+  color:#111;
+}
+
+.comedie:hover{
+  border-color:#fff2a6;
+}
+
+/* COMPETENCES */
+
+.competences{
+  background:linear-gradient(135deg,#8e2de2,#4a00e0);
+}
+
+.competences:hover{
+  border-color:#c7a4ff;
+}
+
+/* STRATEGIE */
+
+.strategie{
+  background:linear-gradient(135deg,#141e30,#243b55);
+}
+
+.strategie:hover{
+  border-color:#6ea8ff;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:768px){
+
+  .nav-hamburger{
+    display:block;
+  }
+
+  .nav-menu{
+    position:absolute;
+    top:80px;
+    left:0;
+    width:100%;
+    background:#111;
+    flex-direction:column;
+    align-items:center;
+    max-height:0;
+    overflow:hidden;
+    transition:0.3s;
+  }
+
+  .nav-menu li{
+    margin:15px 0;
+  }
+
+  .nav-toggle:checked ~ .nav-hamburger + .nav-menu{
+    max-height:300px;
+    padding-bottom:20px;
+  }
+
+  .page-title{
+    font-size:2.2rem;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .category-card{
+    min-height:180px;
+    padding:25px 20px;
+  }
+
+  .category-card h2{
+    font-size:1.6rem;
+  }
+
+}

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Romance - Sekai Clash</title>
+<link rel="stylesheet" href="romance.css">
+</head>
+<body>
+
+<nav class="navbar">
+<div class="nav-container">
+<a href="accueil.html" class="nav-logo">Sekai<span>Clash</span></a>
+</div>
+</nav>
+
+<main class="container">
+<a href="page2.html" class="back-btn">← Retour</a>
+<h1 class="page-title">Romance <span>Clashs</span></h1>
+<p class="page-subtitle">Les meilleurs couples anime.</p>
+<div class="clash-list" id="clash-list"></div>
+</main>
+
+<script>
+const debates = [
+"Quel couple est le plus iconique entre Naruto et Hinata ou Sasuke et Sakura ?",
+"Quel couple possède la meilleure alchimie entre Ichigo et Orihime ou Rukia et Renji ?",
+"Qui est le plus romantique entre Kirito et Asuna ou Zero Two et Hiro ?",
+"Quel duo est le plus touchant entre Tomoya et Nagisa ou Kousei et Kaori ?",
+"Quel couple est le plus drôle entre Loid et Yor ou Gojo et Utahime ?",
+"Qui possède la meilleure relation entre Eren et Mikasa ou Armin et Annie ?",
+"Quel couple est le plus tragique entre Guts et Casca ou Lelouch et C.C ?",
+"Qui a la meilleure complicité entre Inuyasha et Kagome ou Miroku et Sango ?",
+"Quel duo est le plus populaire entre Shinichi et Ran ou Conan et Haibara ?",
+"Qui est le plus mignon entre Tanjiro et Kanao ou Zenitsu et Nezuko ?",
+"Quel couple possède le meilleur développement entre Deku et Uraraka ou Todoroki et Momo ?",
+"Qui est le plus fidèle entre Edward et Winry ou Roy et Riza ?",
+"Quel couple est le plus émouvant entre Violet et Gilbert ou Okabe et Kurisu ?",
+"Qui possède la meilleure connexion entre Chihiro et Haku ou Howl et Sophie ?",
+"Quel duo est le plus culte entre Luffy et Boa ou Sanji et Pudding ?",
+"Qui est le plus drôle entre Taiga et Ryuuji ou Kaguya et Shirogane ?",
+"Quel couple possède la meilleure histoire entre Simon et Nia ou Yusuke et Keiko ?",
+"Qui est le plus stylé entre Spike et Julia ou Vash et Meryl ?",
+"Quel couple est le plus sous-coté entre Law et Robin ou Zoro et Hiyori ?",
+"Qui est le plus sincère entre Haruhi et Kyon ou Tomoya et Nagisa ?",
+"Quel duo est le plus émouvant entre Subaru et Emilia ou Rem et Subaru ?",
+"Qui possède la meilleure romance lente entre Oreki et Chitanda ou Sakuta et Mai ?",
+"Quel couple est le plus populaire entre Natsu et Lucy ou Gray et Juvia ?",
+"Qui est le plus jaloux entre Sanji et Pudding ou Boa et Luffy ?",
+"Quel couple est le plus dramatique entre Light et Misa ou Lelouch et Shirley ?",
+"Qui possède le meilleur futur ensemble entre Naruto et Hinata ou Vegeta et Bulma ?",
+"Quel duo est le plus marrant entre Denji et Power ou Aki et Himeno ?",
+"Qui est le plus protecteur entre Kirito et Asuna ou Shin et Lena ?",
+"Quel couple est le plus inattendu entre Sesshomaru et Rin ou Vegeta et Bulma ?",
+"Qui possède la meilleure déclaration d’amour entre Okabe et Kurisu ou Kousei et Kaori ?",
+"Quel couple est le plus tragique entre Eren et Mikasa ou Guts et Casca ?",
+"Qui est le plus adorable entre Marin et Gojo ou Komi et Tadano ?",
+"Quel duo est le plus populaire entre Yato et Hiyori ou Touka et Kaneki ?",
+"Qui possède la meilleure chimie entre Loid et Yor ou Shin et Lena ?",
+"Quel couple est le plus fort émotionnellement entre Subaru et Emilia ou Sakuta et Mai ?",
+"Qui est le plus mémorable entre Edward et Winry ou Naruto et Hinata ?",
+"Quel duo est le plus drôle entre Kaguya et Shirogane ou Taiga et Ryuuji ?",
+"Qui possède la meilleure fin entre Tomoya et Nagisa ou Lelouch et C.C ?",
+"Quel couple est le plus touchant entre Violet et Gilbert ou Chise et Elias ?",
+"Qui est le plus équilibré entre Roy et Riza ou Mustang et Hawkeye ?",
+"Quel duo possède la meilleure confiance entre Kirito et Asuna ou Shin et Lena ?",
+"Qui est le plus romantique entre Howl et Sophie ou Haku et Chihiro ?",
+"Quel couple est le plus populaire entre Rem et Subaru ou Emilia et Subaru ?",
+"Qui possède la meilleure évolution entre Hinata et Naruto ou Orihime et Ichigo ?",
+"Quel duo est le plus inattendu entre Sanji et Pudding ou Sesshomaru et Rin ?",
+"Qui est le plus sincère entre Kousei et Kaori ou Tomoya et Nagisa ?",
+"Quel couple est le plus culte entre Guts et Casca ou Inuyasha et Kagome ?",
+"Qui possède la meilleure romance anime entre Okabe et Kurisu ou Sakuta et Mai ?",
+"Quel duo est le plus attachant entre Loid et Yor ou Anya et Damian ?",
+"Qui est le meilleur couple anime entre Naruto et Hinata ou Kirito et Asuna ?"
+];
+ const list = document.getElementById("clash-list");
+
+    let votes = {};
+    let comments = {};
+    let userReactions = {};
+    let username = sessionStorage.getItem("username") || "";
+    let commentIdCounter = 0;
+
+    debates.forEach((debate, index) => {
+
+      const parts = debate.match(/entre\s+(.+?)\s+et\s+(.+?)\s*\?/i);
+
+      const fighter1 = parts ? parts[1].trim() : "Personnage 1";
+      const fighter2 = parts ? parts[2].trim() : "Personnage 2";
+
+      votes[index] = {
+        f1True:0,
+        f1False:0,
+        f2True:0,
+        f2False:0,
+        hasVoted:{}
+      };
+
+      comments[index] = [];
+      userReactions[index] = {};
+
+      list.innerHTML += `
+
+        <div class="clash-card">
+
+          <div class="clash-question">
+            <h3>${debate}</h3>
+          </div>
+
+          <div class="clash-versus">
+
+            <div class="fighter">
+
+              <h4>${fighter1}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},1,'true')">
+
+                  Vrai
+                  <span id="f1t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},1,'false')">
+
+                  Faux
+                  <span id="f1f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter">
+
+              <h4>${fighter2}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},2,'true')">
+
+                  Vrai
+                  <span id="f2t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},2,'false')">
+
+                  Faux
+                  <span id="f2f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="comment-section">
+
+            <div class="comment-header-title">
+              Débat : ${fighter1} vs ${fighter2}
+            </div>
+
+            <div class="username-input">
+
+              <input
+                type="text"
+                id="username-${index}"
+                placeholder="Ton pseudo"
+                maxlength="20"
+                value="${username}"
+              >
+
+              <button
+                class="save-name-btn"
+                onclick="saveUsername(${index})"
+              >
+                OK
+              </button>
+
+            </div>
+
+            <div class="comment-input">
+
+              <input
+                type="text"
+                id="comment-${index}"
+                placeholder="Argumente ton choix..."
+                maxlength="200"
+              >
+
+              <button
+                class="comment-btn"
+                onclick="postComment(${index})"
+              >
+                Envoyer
+              </button>
+
+            </div>
+
+            <div class="comments" id="comments-${index}"></div>
+
+          </div>
+
+        </div>
+
+      `;
+    });
+
+    function saveUsername(debateId){
+
+      const input = document.getElementById(`username-${debateId}`);
+
+      username = input.value.trim();
+
+      if(username){
+
+        sessionStorage.setItem("username", username);
+
+        input.disabled = true;
+
+        document.querySelector(
+          `#username-${debateId} + button`
+        ).textContent = "✓";
+      }
+    }
+
+    function voteFighter(debateId, fighter, type){
+
+      const key =
+      `f${fighter}${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+      if(!votes[debateId].hasVoted){
+        votes[debateId].hasVoted = {};
+      }
+
+      if(votes[debateId].hasVoted[fighter] === type){
+
+        votes[debateId][key]--;
+
+        delete votes[debateId].hasVoted[fighter];
+
+      }else{
+
+        if(votes[debateId].hasVoted[fighter]){
+
+          const oldType = votes[debateId].hasVoted[fighter];
+
+          const oldKey =
+          `f${fighter}${oldType.charAt(0).toUpperCase() + oldType.slice(1)}`;
+
+          votes[debateId][oldKey]--;
+        }
+
+        votes[debateId][key]++;
+
+        votes[debateId].hasVoted[fighter] = type;
+      }
+
+      document.getElementById(`f1t-${debateId}`).textContent =
+      votes[debateId].f1True;
+
+      document.getElementById(`f1f-${debateId}`).textContent =
+      votes[debateId].f1False;
+
+      document.getElementById(`f2t-${debateId}`).textContent =
+      votes[debateId].f2True;
+
+      document.getElementById(`f2f-${debateId}`).textContent =
+      votes[debateId].f2False;
+    }
+
+    function postComment(debateId){
+
+      const input = document.getElementById(`comment-${debateId}`);
+
+      const text = input.value.trim();
+
+      const name =
+      username ||
+      document.getElementById(`username-${debateId}`).value.trim() ||
+      "Anonyme";
+
+      if(!username){
+
+        username = name;
+
+        sessionStorage.setItem("username", username);
+      }
+
+      if(text === "") return;
+
+      const commentId = commentIdCounter++;
+
+      comments[debateId].push({
+
+        id:commentId,
+        text:text,
+        user:name,
+        likes:0,
+        dislikes:0
+
+      });
+
+      renderComments(debateId);
+
+      input.value = "";
+    }
+
+    function renderComments(debateId){
+
+      const commentsDiv =
+      document.getElementById(`comments-${debateId}`);
+
+      commentsDiv.innerHTML = "";
+
+      comments[debateId].forEach(comment => {
+
+        const userReact =
+        userReactions[debateId]?.[comment.id];
+
+        commentsDiv.innerHTML += `
+
+          <div class="comment">
+
+            <div class="comment-header">
+
+              <span class="comment-user">
+                ${comment.user}
+              </span>
+
+            </div>
+
+            <p>${comment.text}</p>
+
+            <div class="comment-actions">
+
+              <button
+                class="like-btn ${userReact === 'like' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'like')"
+              >
+                👍
+                <span>${comment.likes}</span>
+              </button>
+
+              <button
+                class="dislike-btn ${userReact === 'dislike' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'dislike')"
+              >
+                👎
+                <span>${comment.dislikes}</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+      });
+    }
+
+    function reactComment(debateId, commentId, type){
+
+      const comment =
+      comments[debateId].find(c => c.id === commentId);
+
+      if(!comment) return;
+
+      if(!userReactions[debateId]){
+        userReactions[debateId] = {};
+      }
+
+      const currentReact =
+      userReactions[debateId][commentId];
+
+      if(currentReact === type){
+
+        if(type === "like"){
+          comment.likes--;
+        }else{
+          comment.dislikes--;
+        }
+
+        delete userReactions[debateId][commentId];
+
+      }else{
+
+        if(currentReact === "like"){
+          comment.likes--;
+        }
+
+        if(currentReact === "dislike"){
+          comment.dislikes--;
+        }
+
+        if(type === "like"){
+          comment.likes++;
+        }else{
+          comment.dislikes++;
+        }
+
+        userReactions[debateId][commentId] = type;
+      }
+
+      renderComments(debateId);
+    }
+
+  </script>
+
+</body>
+</html>

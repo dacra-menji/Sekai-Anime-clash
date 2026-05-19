@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comédie - Sekai Clash</title>
+<link rel="stylesheet" href="comedie.css">
+</head>
+<body>
+
+<nav class="navbar">
+<div class="nav-container">
+<a href="accueil.html" class="nav-logo">Sekai<span>Clash</span></a>
+</div>
+</nav>
+
+<main class="container">
+<a href="page2.html" class="back-btn">← Retour</a>
+<h1 class="page-title">Comédie <span>Clashs</span></h1>
+<p class="page-subtitle">Les animes les plus hilarants.</p>
+<div class="clash-list" id="clash-list"></div>
+</main>
+
+<script>
+const debates = [
+"Quel anime est le plus drôle entre Gintama et Grand Blue ?",
+"Qui possède le meilleur humour entre Saiki Kusuo et Sakamoto ?",
+"Quel anime a les personnages les plus fous entre Konosuba et Nichijou ?",
+"Qui est le plus hilarant entre Gintoki et Saitama ?",
+"Quel duo est le plus drôle entre Kazuma et Aqua ou Goku et Vegeta ?",
+"Qui possède les meilleures parodies entre Gintama et One Punch Man ?",
+"Quel anime est le plus absurde entre Nichijou et Asobi Asobase ?",
+"Qui est le plus chaotique entre Power et Aqua ?",
+"Quel anime possède les meilleurs moments WTF entre Prison School et Grand Blue ?",
+"Qui est le plus marrant entre Saiki et Mob ?",
+"Quel duo est le plus drôle entre Loid et Yor ou Anya et Damian ?",
+"Qui possède le meilleur humour noir entre Chainsaw Man et Dandadan ?",
+"Quel anime est le plus fun entre Spy x Family et Sakamoto Days ?",
+"Qui est le plus ridicule entre Zenitsu et Usopp ?",
+"Quel anime possède les meilleures réactions faciales entre Kaguya Sama et Nichijou ?",
+"Qui est le plus imprévisible entre Gintoki et Gojo ?",
+"Quel duo est le plus stupide entre Aqua et Darkness ou Inosuke et Zenitsu ?",
+"Qui possède le meilleur humour scolaire entre Sket Dance et Daily Lives of High School Boys ?",
+"Quel anime est le plus sous-coté niveau humour entre Barakamon et Hinamatsuri ?",
+"Qui est le plus hilarant entre Mash et Saitama ?",
+"Quel duo est le plus iconique entre Gintoki et Kagura ou Kazuma et Aqua ?",
+"Qui possède les meilleures disputes entre Kaguya et Shirogane ou Naruto et Sasuke ?",
+"Quel anime est le plus relaxant et drôle entre Yuru Camp et Bocchi the Rock ?",
+"Qui est le plus maladroit entre Bocchi et Komi ?",
+"Quel anime possède les meilleurs personnages secondaires comiques entre Gintama et Konosuba ?",
+"Qui est le plus drôle sans le vouloir entre Saitama et Mob ?",
+"Quel duo est le plus marrant entre Denji et Power ou Itadori et Todo ?",
+"Qui possède le meilleur humour d’action entre One Punch Man et Mashle ?",
+"Quel anime est le plus déjanté entre Kill la Kill et FLCL ?",
+"Qui est le plus drôle entre Joseph Joestar et Gintoki ?",
+"Quel anime possède les meilleures parodies shonen entre Gintama et Mashle ?",
+"Qui est le plus hilarant entre Anya et Power ?",
+"Quel duo possède les meilleures réactions exagérées entre Aqua et Kazuma ou Chika et Kaguya ?",
+"Qui est le plus chaotique entre Gojo et Gintoki ?",
+"Quel anime est le plus drôle à revoir entre Grand Blue et Konosuba ?",
+"Qui possède les meilleurs running gags entre One Piece et Gintama ?",
+"Quel duo est le plus drôle entre Zoro et Sanji ou Naruto et Sasuke ?",
+"Qui est le plus ridicule entre Buggy et King ?",
+"Quel anime possède les meilleurs moments absurdes entre Nichijou et Cromartie High School ?",
+"Qui est le plus expressif entre Chika Fujiwara et Anya ?",
+"Quel anime est le plus drôle en combat entre One Punch Man et Mob Psycho 100 ?",
+"Qui possède le meilleur humour romantique entre Kaguya Sama et Toradora ?",
+"Quel duo est le plus fun entre Luffy et Usopp ou Goku et Krillin ?",
+"Qui est le plus marrant entre Todo et Inosuke ?",
+"Quel anime possède les meilleurs personnages idiots entre Konosuba et Grand Blue ?",
+"Qui est le plus drôle naturellement entre Goku et Luffy ?",
+"Quel duo est le plus légendaire entre Gintoki et Hijikata ou Aqua et Kazuma ?",
+"Qui possède le meilleur humour absurde entre Bobobo et Nichijou ?",
+"Quel anime est le plus hilarant de tous les temps entre Gintama et Konosuba ?",
+"Qui est le roi de la comédie anime entre Gintoki et Saiki ?"
+];
+ const list = document.getElementById("clash-list");
+
+    let votes = {};
+    let comments = {};
+    let userReactions = {};
+    let username = sessionStorage.getItem("username") || "";
+    let commentIdCounter = 0;
+
+    debates.forEach((debate, index) => {
+
+      const parts = debate.match(/entre\s+(.+?)\s+et\s+(.+?)\s*\?/i);
+
+      const fighter1 = parts ? parts[1].trim() : "Personnage 1";
+      const fighter2 = parts ? parts[2].trim() : "Personnage 2";
+
+      votes[index] = {
+        f1True:0,
+        f1False:0,
+        f2True:0,
+        f2False:0,
+        hasVoted:{}
+      };
+
+      comments[index] = [];
+      userReactions[index] = {};
+
+      list.innerHTML += `
+
+        <div class="clash-card">
+
+          <div class="clash-question">
+            <h3>${debate}</h3>
+          </div>
+
+          <div class="clash-versus">
+
+            <div class="fighter">
+
+              <h4>${fighter1}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},1,'true')">
+
+                  Vrai
+                  <span id="f1t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},1,'false')">
+
+                  Faux
+                  <span id="f1f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter">
+
+              <h4>${fighter2}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},2,'true')">
+
+                  Vrai
+                  <span id="f2t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},2,'false')">
+
+                  Faux
+                  <span id="f2f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="comment-section">
+
+            <div class="comment-header-title">
+              Débat : ${fighter1} vs ${fighter2}
+            </div>
+
+            <div class="username-input">
+
+              <input
+                type="text"
+                id="username-${index}"
+                placeholder="Ton pseudo"
+                maxlength="20"
+                value="${username}"
+              >
+
+              <button
+                class="save-name-btn"
+                onclick="saveUsername(${index})"
+              >
+                OK
+              </button>
+
+            </div>
+
+            <div class="comment-input">
+
+              <input
+                type="text"
+                id="comment-${index}"
+                placeholder="Argumente ton choix..."
+                maxlength="200"
+              >
+
+              <button
+                class="comment-btn"
+                onclick="postComment(${index})"
+              >
+                Envoyer
+              </button>
+
+            </div>
+
+            <div class="comments" id="comments-${index}"></div>
+
+          </div>
+
+        </div>
+
+      `;
+    });
+
+    function saveUsername(debateId){
+
+      const input = document.getElementById(`username-${debateId}`);
+
+      username = input.value.trim();
+
+      if(username){
+
+        sessionStorage.setItem("username", username);
+
+        input.disabled = true;
+
+        document.querySelector(
+          `#username-${debateId} + button`
+        ).textContent = "✓";
+      }
+    }
+
+    function voteFighter(debateId, fighter, type){
+
+      const key =
+      `f${fighter}${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+      if(!votes[debateId].hasVoted){
+        votes[debateId].hasVoted = {};
+      }
+
+      if(votes[debateId].hasVoted[fighter] === type){
+
+        votes[debateId][key]--;
+
+        delete votes[debateId].hasVoted[fighter];
+
+      }else{
+
+        if(votes[debateId].hasVoted[fighter]){
+
+          const oldType = votes[debateId].hasVoted[fighter];
+
+          const oldKey =
+          `f${fighter}${oldType.charAt(0).toUpperCase() + oldType.slice(1)}`;
+
+          votes[debateId][oldKey]--;
+        }
+
+        votes[debateId][key]++;
+
+        votes[debateId].hasVoted[fighter] = type;
+      }
+
+      document.getElementById(`f1t-${debateId}`).textContent =
+      votes[debateId].f1True;
+
+      document.getElementById(`f1f-${debateId}`).textContent =
+      votes[debateId].f1False;
+
+      document.getElementById(`f2t-${debateId}`).textContent =
+      votes[debateId].f2True;
+
+      document.getElementById(`f2f-${debateId}`).textContent =
+      votes[debateId].f2False;
+    }
+
+    function postComment(debateId){
+
+      const input = document.getElementById(`comment-${debateId}`);
+
+      const text = input.value.trim();
+
+      const name =
+      username ||
+      document.getElementById(`username-${debateId}`).value.trim() ||
+      "Anonyme";
+
+      if(!username){
+
+        username = name;
+
+        sessionStorage.setItem("username", username);
+      }
+
+      if(text === "") return;
+
+      const commentId = commentIdCounter++;
+
+      comments[debateId].push({
+
+        id:commentId,
+        text:text,
+        user:name,
+        likes:0,
+        dislikes:0
+
+      });
+
+      renderComments(debateId);
+
+      input.value = "";
+    }
+
+    function renderComments(debateId){
+
+      const commentsDiv =
+      document.getElementById(`comments-${debateId}`);
+
+      commentsDiv.innerHTML = "";
+
+      comments[debateId].forEach(comment => {
+
+        const userReact =
+        userReactions[debateId]?.[comment.id];
+
+        commentsDiv.innerHTML += `
+
+          <div class="comment">
+
+            <div class="comment-header">
+
+              <span class="comment-user">
+                ${comment.user}
+              </span>
+
+            </div>
+
+            <p>${comment.text}</p>
+
+            <div class="comment-actions">
+
+              <button
+                class="like-btn ${userReact === 'like' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'like')"
+              >
+                👍
+                <span>${comment.likes}</span>
+              </button>
+
+              <button
+                class="dislike-btn ${userReact === 'dislike' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'dislike')"
+              >
+                👎
+                <span>${comment.dislikes}</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+      });
+    }
+
+    function reactComment(debateId, commentId, type){
+
+      const comment =
+      comments[debateId].find(c => c.id === commentId);
+
+      if(!comment) return;
+
+      if(!userReactions[debateId]){
+        userReactions[debateId] = {};
+      }
+
+      const currentReact =
+      userReactions[debateId][commentId];
+
+      if(currentReact === type){
+
+        if(type === "like"){
+          comment.likes--;
+        }else{
+          comment.dislikes--;
+        }
+
+        delete userReactions[debateId][commentId];
+
+      }else{
+
+        if(currentReact === "like"){
+          comment.likes--;
+        }
+
+        if(currentReact === "dislike"){
+          comment.dislikes--;
+        }
+
+        if(type === "like"){
+          comment.likes++;
+        }else{
+          comment.dislikes++;
+        }
+
+        userReactions[debateId][commentId] = type;
+      }
+
+      renderComments(debateId);
+    }
+
+  </script>
+
+</body>
+</html>
