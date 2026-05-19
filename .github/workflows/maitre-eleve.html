@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maître vs Élève - Sekai Clash</title>
+  <link rel="stylesheet" href="maitre-eleve.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">Sekai<span>Clash</span></a>
+  </div>
+</nav>
+
+<main class="container">
+  <a href="page2.html" class="back-btn">← Retour</a>
+  <h1 class="page-title">Maître vs <span>Élève</span></h1>
+  <p class="page-subtitle">Les plus grands duos anime.</p>
+  <div class="clash-list" id="clash-list"></div>
+</main>
+
+<script>
+const debates = [
+"Qui est le meilleur maître entre Jiraiya et Kakashi ?",
+"Qui a le plus dépassé son maître entre Naruto et Jiraiya ?",
+"Qui possède le meilleur entraînement entre Whis et Goku ?",
+"Qui est le plus stratégique entre Rayleigh et Luffy ?",
+"Qui possède le meilleur héritage entre Minato et Naruto ?",
+"Qui est le plus expérimenté entre Roshi et Krillin ?",
+"Qui est le plus talentueux entre Piccolo et Gohan ?",
+"Qui possède le meilleur duo maître-élève entre Gojo et Yuji ?",
+"Qui est le plus discipliné entre Nanami et Itadori ?",
+"Qui maîtrise le mieux ses techniques entre Urahara et Ichigo ?",
+"Qui est le plus dangereux entre Kakashi et Sasuke ?",
+"Qui possède le meilleur potentiel entre Ging et Gon ?",
+"Qui est le plus rapide entre Minato et Kakashi ?",
+"Qui est le meilleur épéiste entre Mihawk et Zoro ?",
+"Qui est le plus charismatique entre Zeff et Sanji ?",
+"Qui possède la meilleure pédagogie entre Yaga et Gojo ?",
+"Qui est le plus intelligent entre Garp et Coby ?",
+"Qui est le plus rusé entre Silva et Killua ?",
+"Qui possède le meilleur instinct entre Hisoka et Gon ?",
+"Qui est le plus calme entre Shoko et Yaga ?",
+"Qui est le plus complet entre Naruto et Jiraiya ?",
+"Qui possède le meilleur style de combat entre Yoruichi et Soi Fon ?",
+"Qui est le plus mature entre Piccolo et Gohan ?",
+"Qui est le plus impressionnant entre Vegeta et Trunks ?",
+"Qui possède le meilleur contrôle entre Geto et Yuta ?",
+"Qui est le plus protecteur entre Zeff et Sanji ?",
+"Qui est le plus redoutable entre Beerus et Whis ?",
+"Qui est le meilleur mentor entre Rayleigh et Luffy ?",
+"Qui est le plus précis entre Roshi et Krillin ?",
+"Qui est le plus expérimenté entre Yamamoto et Shunsui ?",
+"Qui possède le meilleur duo entre Urahara et Ichigo ?",
+"Qui est le plus talentueux entre Gon et Killua ?",
+"Qui possède le meilleur leadership entre Garp et Sengoku ?",
+"Qui est le plus imprévisible entre Hisoka et Gon ?",
+"Qui maîtrise le mieux son pouvoir entre Vegeta et Cabba ?",
+"Qui possède la meilleure évolution entre Megumi et Gojo ?",
+"Qui est le plus fort mentalement entre Maki et Mai ?",
+"Qui est le plus influent entre Garp et Dragon ?",
+"Qui possède le meilleur héritage entre Naruto et Minato ?",
+"Qui est le plus discipliné entre Urahara et Ichigo ?",
+"Qui est le meilleur stratège entre Yamamoto et Aizen ?",
+"Qui est le plus dangereux entre Aizen et Momo ?",
+"Qui possède le meilleur entraînement entre Biscuit et Gon ?",
+"Qui est le plus complet entre Kakashi et Obito ?",
+"Qui est le plus talentueu x entre Ging et Gon ?",
+"Qui possède la meilleure relation maître-élève entre Gojo et Megumi ?",
+"Qui est le plus expérimenté entre Whitebeard et Ace ?",
+"Qui possède le meilleur style entre Zoro et Mihawk ?",
+"Qui est le plus calme entre King Kai et Goku ?",
+"Qui est le meilleur duo maître-élève anime entre Jiraiya et Naruto ?"
+];
+const list = document.getElementById("clash-list");
+
+    let votes = {};
+    let comments = {};
+    let userReactions = {};
+    let username = sessionStorage.getItem("username") || "";
+    let commentIdCounter = 0;
+
+    debates.forEach((debate, index) => {
+
+      const parts = debate.match(/entre\s+(.+?)\s+et\s+(.+?)\s*\?/i);
+
+      const fighter1 = parts ? parts[1].trim() : "Personnage 1";
+      const fighter2 = parts ? parts[2].trim() : "Personnage 2";
+
+      votes[index] = {
+        f1True:0,
+        f1False:0,
+        f2True:0,
+        f2False:0,
+        hasVoted:{}
+      };
+
+      comments[index] = [];
+      userReactions[index] = {};
+
+      list.innerHTML += `
+
+        <div class="clash-card">
+
+          <div class="clash-question">
+            <h3>${debate}</h3>
+          </div>
+
+          <div class="clash-versus">
+
+            <div class="fighter">
+
+              <h4>${fighter1}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},1,'true')">
+
+                  Vrai
+                  <span id="f1t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},1,'false')">
+
+                  Faux
+                  <span id="f1f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter">
+
+              <h4>${fighter2}</h4>
+
+              <div class="vote-buttons">
+
+                <button class="vote-btn true-btn"
+                onclick="voteFighter(${index},2,'true')">
+
+                  Vrai
+                  <span id="f2t-${index}">0</span>
+
+                </button>
+
+                <button class="vote-btn false-btn"
+                onclick="voteFighter(${index},2,'false')">
+
+                  Faux
+                  <span id="f2f-${index}">0</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="comment-section">
+
+            <div class="comment-header-title">
+              Débat : ${fighter1} vs ${fighter2}
+            </div>
+
+            <div class="username-input">
+
+              <input
+                type="text"
+                id="username-${index}"
+                placeholder="Ton pseudo"
+                maxlength="20"
+                value="${username}"
+              >
+
+              <button
+                class="save-name-btn"
+                onclick="saveUsername(${index})"
+              >
+                OK
+              </button>
+
+            </div>
+
+            <div class="comment-input">
+
+              <input
+                type="text"
+                id="comment-${index}"
+                placeholder="Argumente ton choix..."
+                maxlength="200"
+              >
+
+              <button
+                class="comment-btn"
+                onclick="postComment(${index})"
+              >
+                Envoyer
+              </button>
+
+            </div>
+
+            <div class="comments" id="comments-${index}"></div>
+
+          </div>
+
+        </div>
+
+      `;
+    });
+
+    function saveUsername(debateId){
+
+      const input = document.getElementById(`username-${debateId}`);
+
+      username = input.value.trim();
+
+      if(username){
+
+        sessionStorage.setItem("username", username);
+
+        input.disabled = true;
+
+        document.querySelector(
+          `#username-${debateId} + button`
+        ).textContent = "✓";
+      }
+    }
+
+    function voteFighter(debateId, fighter, type){
+
+      const key =
+      `f${fighter}${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+      if(!votes[debateId].hasVoted){
+        votes[debateId].hasVoted = {};
+      }
+
+      if(votes[debateId].hasVoted[fighter] === type){
+
+        votes[debateId][key]--;
+
+        delete votes[debateId].hasVoted[fighter];
+
+      }else{
+
+        if(votes[debateId].hasVoted[fighter]){
+
+          const oldType = votes[debateId].hasVoted[fighter];
+
+          const oldKey =
+          `f${fighter}${oldType.charAt(0).toUpperCase() + oldType.slice(1)}`;
+
+          votes[debateId][oldKey]--;
+        }
+
+        votes[debateId][key]++;
+
+        votes[debateId].hasVoted[fighter] = type;
+      }
+
+      document.getElementById(`f1t-${debateId}`).textContent =
+      votes[debateId].f1True;
+
+      document.getElementById(`f1f-${debateId}`).textContent =
+      votes[debateId].f1False;
+
+      document.getElementById(`f2t-${debateId}`).textContent =
+      votes[debateId].f2True;
+
+      document.getElementById(`f2f-${debateId}`).textContent =
+      votes[debateId].f2False;
+    }
+
+    function postComment(debateId){
+
+      const input = document.getElementById(`comment-${debateId}`);
+
+      const text = input.value.trim();
+
+      const name =
+      username ||
+      document.getElementById(`username-${debateId}`).value.trim() ||
+      "Anonyme";
+
+      if(!username){
+
+        username = name;
+
+        sessionStorage.setItem("username", username);
+      }
+
+      if(text === "") return;
+
+      const commentId = commentIdCounter++;
+
+      comments[debateId].push({
+
+        id:commentId,
+        text:text,
+        user:name,
+        likes:0,
+        dislikes:0
+
+      });
+
+      renderComments(debateId);
+
+      input.value = "";
+    }
+
+    function renderComments(debateId){
+
+      const commentsDiv =
+      document.getElementById(`comments-${debateId}`);
+
+      commentsDiv.innerHTML = "";
+
+      comments[debateId].forEach(comment => {
+
+        const userReact =
+        userReactions[debateId]?.[comment.id];
+
+        commentsDiv.innerHTML += `
+
+          <div class="comment">
+
+            <div class="comment-header">
+
+              <span class="comment-user">
+                ${comment.user}
+              </span>
+
+            </div>
+
+            <p>${comment.text}</p>
+
+            <div class="comment-actions">
+
+              <button
+                class="like-btn ${userReact === 'like' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'like')"
+              >
+                👍
+                <span>${comment.likes}</span>
+              </button>
+
+              <button
+                class="dislike-btn ${userReact === 'dislike' ? 'active' : ''}"
+                onclick="reactComment(${debateId},${comment.id},'dislike')"
+              >
+                👎
+                <span>${comment.dislikes}</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+      });
+    }
+
+    function reactComment(debateId, commentId, type){
+
+      const comment =
+      comments[debateId].find(c => c.id === commentId);
+
+      if(!comment) return;
+
+      if(!userReactions[debateId]){
+        userReactions[debateId] = {};
+      }
+
+      const currentReact =
+      userReactions[debateId][commentId];
+
+      if(currentReact === type){
+
+        if(type === "like"){
+          comment.likes--;
+        }else{
+          comment.dislikes--;
+        }
+
+        delete userReactions[debateId][commentId];
+
+      }else{
+
+        if(currentReact === "like"){
+          comment.likes--;
+        }
+
+        if(currentReact === "dislike"){
+          comment.dislikes--;
+        }
+
+        if(type === "like"){
+          comment.likes++;
+        }else{
+          comment.dislikes++;
+        }
+
+        userReactions[debateId][commentId] = type;
+      }
+
+      renderComments(debateId);
+    }
+
+  </script>
+
+</body>
+</html>
